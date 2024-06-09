@@ -1,27 +1,32 @@
 from json import loads
 
-import requests
+from dm_api_account.apis.account_api import AccountApi
+from dm_api_account.apis.login_api import LoginApi
+from api_mailhog.apis.mailhog_api import MailhogApi
 
 
 def test_post_v1_account():
     # Регистрация пользователя
-
-    login = 'optes4t63'
+    account_api = AccountApi(host='http://5.63.153.31:5051')
+    login_api = LoginApi(host='http://5.63.153.31:5051')
+    mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
+    login = 'optees4984t63'
     password = '12345as'
     email = f'{login}@mail.ru'
 
     json_data = {
         'login': login,
         'email': email,
-        'password': password,
+        'password': password
     }
-    response = post_v1_account(json_data)
+
+    response = account_api.post_v1_account(json_data=json_data)
     print(response.status_code)
     print(response.text)
     assert response.status_code == 201, f'Новый пользователь не был создан, {response.json()}'
     # Получить письма из почтового сервера
 
-    response = get_api_v2_messages(response)
+    response = mailhog_api.get_api_v2_messages()
     print(response.status_code)
     print(response.text)
     assert response.status_code == 200, 'Письма не были получены'
@@ -29,38 +34,28 @@ def test_post_v1_account():
     token = get_activate_token_by_login(login, response)
     assert token is not None, f'Токен для пользователя {login} не был получен'
     # активация пользователя
-    response = put_v1_account_to_token(response, token)
+    response = account_api.put_v1_account_to_token(token=token)
 
     print(response.status_code)
     print(response.text)
     assert response.status_code == 200, 'Пользователь не был активирован'
     # авторизация
+    json_data = {
+        'login': login,
+        'password': password,
+        'rememberMe': True
+    }
 
-    response = post_v1_account_login(login, password, response)
+    response = login_api.post_v1_account_login(json_data=json_data)
     print(response.status_code)
     print(response.text)
     assert response.status_code == 200, 'Пользователь не смог авторизоваться'
 
 
-def post_v1_account_login(login, password, response):
-    json_data = {
-        'login': login,
-        'password': password,
-        'rememberMe': True,
-    }
-    response = requests.post('http://5.63.153.31:5051/v1/account/login', json=json_data)
-    return response
-
-
-def put_v1_account_to_token(response, token):
-    headers = {
-        'accept': 'text/plain'
-    }
-    response = requests.put(f'http://5.63.153.31:5051/v1/account/{token}', headers=headers)
-    return response
-
-
-def get_activate_token_by_login(login, response):
+def get_activate_token_by_login(
+        login,
+        response
+        ):
     token = None
     for item in response.json()['items']:
         user_data = loads(item['Content']['Body'])
@@ -69,16 +64,3 @@ def get_activate_token_by_login(login, response):
             print(user_login)
             token = user_data['ConfirmationLinkUrl'].split('/')[-1]
     return token
-
-
-def get_api_v2_messages(response):
-    params = {
-        'limit': '50',
-    }
-    response = requests.get('http://5.63.153.31:5025/api/v2/messages', params=params, verify=False)
-    return response
-
-
-def post_v1_account(json_data):
-    response = requests.post('http://5.63.153.31:5051/v1/account', json=json_data)
-    return response
