@@ -5,13 +5,13 @@ from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
 
 
-def test_post_v1_account():
+def test_put_v1_account_token():
     # Регистрация пользователя
     account_api = AccountApi(host='http://5.63.153.31:5051')
     login_api = LoginApi(host='http://5.63.153.31:5051')
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
-    login = '8opt3eesf4984t64'
-    password = '123345as'
+    login = 'opt3ee6sf4984t8'
+    password = '1263345as'
     email = f'{login}@mail.ru'
 
     json_data = {
