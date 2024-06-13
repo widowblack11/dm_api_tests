@@ -51,7 +51,38 @@ class AccountHelper:
             'rememberMe': remember_me
         }
         response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 200, 'Пользователь не смог авторизоваться'
+
+        return response
+
+    def change_email(
+            self,
+            login: str,
+            password: str,
+            email: str
+            ):
+        json_data = {
+            'login': login,
+            'password': password,
+            'email': email
+        }
+        response = self.dm_account_api.account_api.put_v1_account_email(json_data=json_data)
+        assert response.status_code == 200, 'Пользователь не смог сменить почту'
+
+        return response
+
+    def activation_by_token_and_login(
+            self,
+            login: str,
+            email: str
+    ):
+        response = self.mailhog.mailhog_api.get_api_v2_messages()
+        assert response.status_code == 200, 'Письма не были получены'
+
+        token = self.get_activate_token_by_login(login=login, email=email, response=response)
+        assert token is not None, f'Токен для пользователя {login} не был получен'
+
+        response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
+        assert response.status_code == 200, 'Пользователь не был активирован'
 
         return response
 
