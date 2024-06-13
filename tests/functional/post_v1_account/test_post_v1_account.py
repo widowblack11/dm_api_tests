@@ -10,7 +10,7 @@ def test_post_v1_account():
     account_api = AccountApi(host='http://5.63.153.31:5051')
     login_api = LoginApi(host='http://5.63.153.31:5051')
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
-    login = '8opt3eesf4984t64750'
+    login = '003eesf4984t64751'
     password = '123345as'
     email = f'{login}@mail.ru'
 
@@ -31,7 +31,7 @@ def test_post_v1_account():
     print(response.text)
     assert response.status_code == 200, 'Письма не были получены'
     # Получить активационный токен
-    token = mailhog_api.get_activate_token_by_login(login, response)
+    token = mailhog_api.get_activate_token_by_login(login, email, response)
     assert token is not None, f'Токен для пользователя {login} не был получен'
     # активация пользователя
     response = account_api.put_v1_account_to_token(token=token)
