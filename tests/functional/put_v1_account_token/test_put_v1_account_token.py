@@ -45,7 +45,7 @@ def test_put_v1_account_token():
     print(response.text)
     assert response.status_code == 200, 'Письма не были получены'
     # Получить активационный токен
-    token = mailhog_api.get_activate_token_by_login(login, response)
+    token = mailhog_api.get_activate_token_by_login(login, email, response)
     assert token is not None, f'Токен для пользователя {login} не был получен'
     # активация пользователя
     response = account_api.put_v1_account_to_token(token=token)

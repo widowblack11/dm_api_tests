@@ -22,9 +22,32 @@ def test_post_v1_account_login():
     dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
     login_api = LoginApi(configuration=dm_api_configuration)
 
-    # не менять для github actions
-    login = 'optest23'
-    password = '12345678y'
+    json_data = {
+        'login': login,
+        'email': email,
+        'password': password
+    }
+
+    response = account_api.post_v1_account(json_data=json_data)
+    print(response.status_code)
+    print(response.text)
+    assert response.status_code == 201, f'Новый пользователь не был создан, {response.json()}'
+    # Получить письма из почтового сервера
+
+    response = mailhog_api.get_api_v2_messages()
+    print(response.status_code)
+    print(response.text)
+    assert response.status_code == 200, 'Письма не были получены'
+    # Получить активационный токен
+    token = mailhog_api.get_activate_token_by_login(login, email, response)
+    assert token is not None, f'Токен для пользователя {login} не был получен'
+    # активация пользователя
+    response = account_api.put_v1_account_to_token(token=token)
+
+    print(response.status_code)
+    print(response.text)
+    print(token)
+    assert response.status_code == 200, 'Пользователь не был активирован'
     # авторизация
     json_data = {
         'login': login,
