@@ -23,7 +23,7 @@ def test_put_v1_account_email():
     account_api = AccountApi(configuration=dm_api_configuration)
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
-    login = 'op3e875135'
+    login = 'op3e8475135'
     password = '12263345as'
     email = f'{login}@mail.ru'
     new_email = f'{login}new@mail.ru'

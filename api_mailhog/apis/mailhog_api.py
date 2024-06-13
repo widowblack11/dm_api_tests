@@ -37,7 +37,7 @@ class MailhogApi(RestClient):
             user_data = loads(item['Content']['Body'])
             find_email = item['Content']['Headers']['To']
             user_login = user_data['Login']
-            user_email=''.join(find_email)
+            user_email = ''.join(find_email)
             if user_login == login and user_email == email:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
         return token

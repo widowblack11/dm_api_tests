@@ -19,8 +19,14 @@ structlog.configure(
 
 def test_post_v1_account_login():
     # Регистрация пользователя
+    mailhog_configuration = MailhogConfiguration(host='http://5.63.153.31:5025')
     dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
+    account_api = AccountApi(configuration=dm_api_configuration)
     login_api = LoginApi(configuration=dm_api_configuration)
+    mailhog_api = MailhogApi(configuration=mailhog_configuration)
+    login = '8opt3eesfgg3ggg67'
+    password = '123345as8'
+    email = f'{login}@mail.ru'
 
     json_data = {
         'login': login,

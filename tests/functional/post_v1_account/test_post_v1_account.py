@@ -22,7 +22,7 @@ def test_post_v1_account():
     account_api = AccountApi(configuration=dm_api_configuration)
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
-    login = '8opt3eesfggggg66'
+    login = '8opt3eesfggggg67'
     password = '123345as8'
     email = f'{login}@mail.ru'
 
