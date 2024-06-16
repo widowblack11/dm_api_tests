@@ -3,6 +3,14 @@ from json import loads
 
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DMApiAccount
+from retrying import retry
+
+
+def retry_if_result_none(
+        result
+        ):
+    """Return True if we should retry (in this case when result is None), False otherwise"""
+    return result is None
 
 
 def retrier(
@@ -15,15 +23,14 @@ def retrier(
         token = None
         count = 0
         while token is None:
-            response = function(*args, **kwargs)
-            return response
+            token = function(*args, **kwargs)
             print(f'Попытка получения токена №{count}!')
             count += 1
             if count == 5:
                 raise AssertionError('Превышено количество попыток получения активационного токена!')
             if token:
                 return token
-            time.sleep(1)
+            time.sleep(5)
 
     return wrapper
 
@@ -56,7 +63,6 @@ class AccountHelper:
         assert response.status_code == 200, 'Письма не были получены'
 
         token = self.get_activate_token_by_login(login=login, email=email)
-        assert token is not None, f'Токен для пользователя {login} не был получен'
 
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
         assert response.status_code == 200, 'Пользователь не был активирован'
@@ -110,7 +116,7 @@ class AccountHelper:
 
         return response
 
-    @retrier
+    @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activate_token_by_login(
             self,
             login,
