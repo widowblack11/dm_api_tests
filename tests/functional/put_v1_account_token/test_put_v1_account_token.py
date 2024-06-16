@@ -30,7 +30,7 @@ def test_put_v1_account_token():
     mailhog = MailHogApi(configuration=mailhog_configuration)
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
-    login = '8o3ep7gggg67'
+    login = '8o3ep@7gggg67'
     password = '123345as8'
     email = f'{login}@mail.ru'
 
