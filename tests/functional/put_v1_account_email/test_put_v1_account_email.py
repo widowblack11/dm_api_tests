@@ -15,29 +15,24 @@ structlog.configure(
     [structlog.processors.JSONRenderer(
         indent=4,
         ensure_ascii=True,
-        #sort_keys=True
+        # sort_keys=True
     )
-     ]
+    ]
 )
 
 
-
-def test_put_v1_account_email():
-    mailhog_configuration = MailhogConfiguration(host='http://5.63.153.31:5025')
-    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
-
-    account = DMApiAccount(configuration=dm_api_configuration)
-    mailhog = MailHogApi(configuration=mailhog_configuration)
-    account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
-
-    login = '8o6422222e'
-    password = '123345a222ssas8'
-    email = f'{login}@mail.ru'
-    new_email=f'{login}new@mail.ru'
+def test_put_v1_account_email(
+        account_helper,
+        prepare_user
+        ):
+    login = prepare_user.login
+    password = prepare_user.password
+    email = prepare_user.email
+    new_email=prepare_user.email + 'new'
 
     account_helper.register_new_user(login=login, password=password, email=email)
     account_helper.change_email(login=login, password=password, email=new_email)
-    response=account_helper.user_login(login=login, password=password)
+    response = account_helper.user_login(login=login, password=password)
     assert response.status_code == 403, f'Получен неверный код ответа после неподтвержденной после смены почты, {response.status_code}'
 
     account_helper.activation_by_token_and_login(login=login, email=new_email)
