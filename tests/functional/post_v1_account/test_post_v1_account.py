@@ -1,3 +1,7 @@
+
+from collections import namedtuple
+from datetime import datetime
+
 import pytest
 import structlog
 
@@ -42,10 +46,24 @@ def account_helper(
     return account_helper
 
 
-def test_post_v1_account(account_helper):
-    login = '8oe128sq23343'
-    password = '1233245as8'
-    email = f'{login}@mail.ru'
+@pytest.fixture
+def prepare_user():
+    now = datetime.now()
+    data = now.strftime("%d_%m_%Y_%H_%M_%S")
+    login = f'prokopenko_{data}'
+    password = '118288388111'
+    email = f'{login}@gmail.com'
+    User = namedtuple('User', ['login', 'password', 'email'])
+    user = User(login=login, password=password, email=email)
+    return user
 
+
+def test_post_v1_account(
+        account_helper,
+        prepare_user
+        ):
+    login=prepare_user.login
+    password=prepare_user.password
+    email=prepare_user.email
     account_helper.register_new_user(login=login, password=password, email=email)
     account_helper.user_login(login=login, password=password)
