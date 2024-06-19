@@ -61,6 +61,18 @@ class AccountHelper:
         self.dm_account_api.account_api.set_headers(token)
         self.dm_account_api.login_api.set_headers(token)
 
+    def request_reset_password(
+            self,
+            login: str,
+            email: str
+    ):
+        json_data = {
+            'login': login,
+            'email': email
+        }
+        response = self.dm_account_api.account_api.post_v1_account_password(json_data)
+        assert response.status_code == 200
+
     def register_new_user(
             self,
             login: str,

@@ -67,3 +67,14 @@ def prepare_user():
     User = namedtuple('User', ['login', 'password', 'email'])
     user = User(login=login, password=password, email=email)
     return user
+
+@pytest.fixture(scope='session')
+def auth_for_new_account(mailhog_api, login, password):
+    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
+    account=DMApiAccount(configuration=dm_api_configuration)
+    account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
+    account_helper.auth_client(
+        login='8o3epsssaa7gggg67',
+        password = '123345900oiuas8'
+    )
+    return account_helper
