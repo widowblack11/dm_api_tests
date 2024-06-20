@@ -145,6 +145,23 @@ class AccountHelper:
 
         return response
 
+    def change_password(
+            self,
+            login: str,
+            oldPassword: str,
+            newPassword: str
+    ):
+        token = self.get_token_for_change_password(login=login)
+        print(token)
+        json_data = {
+            'login': login,
+            'token': token,
+            'oldPassword': oldPassword,
+            'newPassword': newPassword
+        }
+        response = self.dm_account_api.account_api.put_v1_account_password(json_data=json_data)
+        return response
+
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activate_token_by_login(
             self,
@@ -160,4 +177,19 @@ class AccountHelper:
             user_email = ''.join(find_email)
             if user_login == login and user_email == email:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
+        return token
+
+    @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
+    def get_token_for_change_password(
+            self,
+            login
+    ):
+        token = None
+        response = self.mailhog.mailhog_api.get_api_v2_messages()
+        for item in response.json()['items']:
+            user_data = loads(item['Content']['Body'])
+            user_login = user_data['Login']
+            if user_login == login and 'ConfirmationLinkUri' in user_data:
+                token = user_data['ConfirmationLinkUri'].split('/')[-1]
+                print(token)
         return token

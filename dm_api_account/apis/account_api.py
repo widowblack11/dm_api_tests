@@ -82,9 +82,9 @@ class AccountApi(RestClient):
         :return:
         """
         response = self.put(
-            path='/v1/account/pssword',
-            **kwargs,
-            json=json_data
+            path='/v1/account/password',
+            json=json_data,
+            **kwargs
         )
         return response
 
@@ -104,3 +104,4 @@ class AccountApi(RestClient):
             json=json_data
         )
         return response
+

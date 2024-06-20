@@ -1,12 +1,6 @@
-from json import loads
-
-import dm_api_account.apis.account_api
-
-
 def test_put_v1_account_password(
         account_helper,
-        prepare_user,
-        account_api,
+        prepare_user
 ):
     login = prepare_user.login
     password = prepare_user.password
@@ -20,4 +14,9 @@ def test_put_v1_account_password(
         login=login,
         email=email
     )
-
+    new_password = password + 'test_new'
+    account_helper.change_password(login=login, oldPassword=password, newPassword=new_password)
+    account_helper.auth_client(
+        login=login,
+        password=new_password
+    )
