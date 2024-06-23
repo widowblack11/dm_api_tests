@@ -114,20 +114,16 @@ class AccountHelper:
         }
         response = self.dm_account_api.account_api.put_v1_account_email(json_data=json_data)
         assert response.status_code == 200, 'Пользователь не смог сменить почту'
+        token = self.get_activate_token_by_login(login=login, email=email)
 
-        return response
+        return token
 
     def activation_by_token_and_login(
             self,
-            login: str,
-            email: str
+            token
     ):
-
-        # assert response.status_code == 200, 'Письма не были получены'
-
-        token = self.get_activate_token_by_login(login=login, email=email)
-        assert token is not None, f'Токен для пользователя {login} не был получен'
-
+        # token = self.get_activate_token_by_login(login=login, email=email)
+        # assert token is not None, f'Токен для пользователя {login} не был получен'
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
         assert response.status_code == 200, 'Пользователь не был активирован'
 
