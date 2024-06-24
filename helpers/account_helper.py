@@ -75,8 +75,10 @@ class AccountHelper:
 
         response = self.dm_account_api.account_api.post_v1_account(json_data=json_data)
         assert response.status_code == 201, f'Новый пользователь не был создан, {response.json()}'
-
+        start_time=time.time()
         response = self.mailhog.mailhog_api.get_api_v2_messages()
+        end_time=time.time()
+        assert end_time - start_time < 1, 'Время ожидания активации превышено'
         assert response.status_code == 200, 'Письма не были получены'
 
         token = self.get_activate_token_by_login(login=login, email=email)
@@ -98,7 +100,7 @@ class AccountHelper:
             'rememberMe': remember_me
         }
         response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-
+        assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
         return response
 
     def change_email(
