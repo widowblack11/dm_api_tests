@@ -30,8 +30,8 @@ def test_put_v1_account_email():
     mailhog = MailHogApi(configuration=mailhog_configuration)
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
-    login = '8o6e'
-    password = '123345as8'
+    login = '8o6422222e'
+    password = '123345a222ssas8'
     email = f'{login}@mail.ru'
     new_email=f'{login}new@mail.ru'
 
