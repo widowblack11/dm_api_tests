@@ -2,8 +2,10 @@ import time
 from json import loads
 
 from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
 from dm_api_account.models.registration import Registration
+from dm_api_account.models.reset_password import ResetPassword
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DMApiAccount
 from retrying import retry
@@ -109,7 +111,7 @@ class AccountHelper:
         response = self.dm_account_api.login_api.post_v1_account_login(
             login_credentials=login_credentials, validation_response=validation_response
         )
-        #assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
+        # assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
         return response
 
     def change_email(
@@ -135,7 +137,7 @@ class AccountHelper:
         # token = self.get_activate_token_by_login(login=login, email=email)
         # assert token is not None, f'Токен для пользователя {login} не был получен'
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
-        #assert response.status_code == 200, 'Пользователь не был активирован'
+        # assert response.status_code == 200, 'Пользователь не был активирован'
 
         return response
 
@@ -146,20 +148,20 @@ class AccountHelper:
             new_password: str,
             email: str
     ):
-        json_data = {
-            'login': login,
-            'email': email
-        }
-        response = self.dm_account_api.account_api.post_v1_account_password(json_data)
+        reset_password = ResetPassword(
+            login=login,
+            email=email
+        )
+        response = self.dm_account_api.account_api.post_v1_account_password(reset_password=reset_password)
         assert response.status_code == 200
         token = self.get_token_for_change_password(login=login)
-        json_data = {
-            'login': login,
-            'token': token,
-            'oldPassword': old_password,
-            'newPassword': new_password
-        }
-        response = self.dm_account_api.account_api.put_v1_account_password(json_data=json_data)
+        change_password = ChangePassword(
+            login=login,
+            token=token,
+            old_password=old_password,
+            new_password=new_password
+        )
+        response = self.dm_account_api.account_api.put_v1_account_password(change_password=change_password)
         return response
 
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)

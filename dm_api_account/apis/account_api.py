@@ -1,7 +1,9 @@
 import requests
 
 from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.registration import Registration
+from dm_api_account.models.reset_password import ResetPassword
 from dm_api_account.models.user_details_envelope import UserDetailsEnvelope
 from dm_api_account.models.user_envelope import UserEnvelope
 from restclient.client import RestClient
@@ -86,18 +88,17 @@ class AccountApi(RestClient):
 
     def put_v1_account_password(
             self,
-            json_data,
+            change_password: ChangePassword,
             validation_response=True,
             **kwargs
     ):
         """
         Change registered user password
-        :param json_data:
         :return:
         """
         response = self.put(
             path='/v1/account/password',
-            json=json_data,
+            json=change_password.model_dump(exclude_none=True, by_alias=True),
             **kwargs
         )
         if validation_response:
@@ -106,17 +107,17 @@ class AccountApi(RestClient):
 
     def post_v1_account_password(
             self,
-            json_data,
+            reset_password: ResetPassword,
             **kwargs
     ):
         """
         Reset registered user password
-        :param json_data:
         :return:
         """
         response = self.post(
             path='/v1/account/password',
-            **kwargs,
-            json=json_data
+            json=reset_password.model_dump(exclude_none=True, by_alias=True),
+            **kwargs
+
         )
         return response
