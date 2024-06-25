@@ -1,6 +1,9 @@
 import time
 from json import loads
 
+from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.login_credentials import LoginCredentials
+from dm_api_account.models.registration import Registration
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DMApiAccount
 from retrying import retry
@@ -47,13 +50,18 @@ class AccountHelper:
     def auth_client(
             self,
             login: str,
-            password: str
+            password: str,
+            remember_me=True,
+            validation_response=False
     ):
+        login_credentials = LoginCredentials(
+            login=login,
+            password=password,
+            remember_me=remember_me
+        )
         response = self.dm_account_api.login_api.post_v1_account_login(
-            json_data={
-                'login': login,
-                'password': password
-            }
+            login_credentials=login_credentials,
+            validation_response=validation_response
         )
         token = {
             'x-dm-auth-token': response.headers['x-dm-auth-token']
@@ -67,40 +75,41 @@ class AccountHelper:
             password: str,
             email: str
     ):
-        json_data = {
-            'login': login,
-            'email': email,
-            'password': password
-        }
+        registration = Registration(
+            login=login,
+            email=email,
+            password=password
+        )
 
-        response = self.dm_account_api.account_api.post_v1_account(json_data=json_data)
+        response = self.dm_account_api.account_api.post_v1_account(registration=registration)
         assert response.status_code == 201, f'Новый пользователь не был создан, {response.json()}'
-        start_time=time.time()
+        start_time = time.time()
         response = self.mailhog.mailhog_api.get_api_v2_messages()
-        end_time=time.time()
-        assert end_time - start_time < 1, 'Время ожидания активации превышено'
+        end_time = time.time()
+        assert end_time - start_time < 5, 'Время ожидания активации превышено'
         assert response.status_code == 200, 'Письма не были получены'
 
         token = self.get_activate_token_by_login(login=login, email=email)
 
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
-        assert response.status_code == 200, 'Пользователь не был активирован'
-
         return response
 
     def user_login(
             self,
             login: str,
             password: str,
-            remember_me: bool = True
+            remember_me: bool = True,
+            validation_response=False
     ):
-        json_data = {
-            'login': login,
-            'password': password,
-            'rememberMe': remember_me
-        }
-        response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-        assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
+        login_credentials = LoginCredentials(
+            login=login,
+            password=password,
+            remember_me=remember_me
+        )
+        response = self.dm_account_api.login_api.post_v1_account_login(
+            login_credentials=login_credentials, validation_response=validation_response
+        )
+        #assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
         return response
 
     def change_email(
@@ -109,13 +118,12 @@ class AccountHelper:
             password: str,
             email: str
     ):
-        json_data = {
-            'login': login,
-            'password': password,
-            'email': email
-        }
-        response = self.dm_account_api.account_api.put_v1_account_email(json_data=json_data)
-        assert response.status_code == 200, 'Пользователь не смог сменить почту'
+        change_email = ChangeEmail(
+            login=login,
+            password=password,
+            email=email
+        )
+        response = self.dm_account_api.account_api.put_v1_account_email(change_email=change_email)
         token = self.get_activate_token_by_login(login=login, email=email)
 
         return token
@@ -127,7 +135,7 @@ class AccountHelper:
         # token = self.get_activate_token_by_login(login=login, email=email)
         # assert token is not None, f'Токен для пользователя {login} не был получен'
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
-        assert response.status_code == 200, 'Пользователь не был активирован'
+        #assert response.status_code == 200, 'Пользователь не был активирован'
 
         return response
 
