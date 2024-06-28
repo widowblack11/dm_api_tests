@@ -41,4 +41,3 @@ def test_post_v1_account(
         )
     )
 
-    print(response)
