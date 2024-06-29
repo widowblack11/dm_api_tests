@@ -60,8 +60,5 @@ def test_invalid_date_of_new_user(
         status_code,
         error_message
 ):
-    login = login
-    password = password
-    email = email
     with check_status_code_http(status_code, error_message):
         account_helper.register_new_user(login=login, password=password, email=email)
