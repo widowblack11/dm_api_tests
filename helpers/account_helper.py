@@ -101,7 +101,8 @@ class AccountHelper:
             login: str,
             password: str,
             remember_me: bool = True,
-            validation_response=False
+            validation_response=False,
+            validate_headers=False
     ):
         login_credentials = LoginCredentials(
             login=login,
@@ -111,7 +112,9 @@ class AccountHelper:
         response = self.dm_account_api.login_api.post_v1_account_login(
             login_credentials=login_credentials, validation_response=validation_response
         )
-        # assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
+        if validate_headers:
+            assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
+            assert response.status_code==200, 'Пользователь не смог авторизоваться'
         return response
 
     def change_email(
