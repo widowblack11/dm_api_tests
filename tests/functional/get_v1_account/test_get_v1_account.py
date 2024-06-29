@@ -48,3 +48,4 @@ def test_get_v1_account_no_auth(
     with check_status_code_http(401, 'User must be authenticated'):
         account_helper.dm_account_api.account_api.get_v1_account(validation_response=validation_response)
 
+
