@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytest
 from hamcrest import (
     assert_that,
     has_property,
@@ -10,6 +11,8 @@ from hamcrest import (
     equal_to,
 
 )
+
+from checkers.http_checkers import check_status_code_http
 
 
 def test_post_v1_account(
@@ -41,3 +44,21 @@ def test_post_v1_account(
         )
     )
 
+
+@pytest.mark.parametrize(
+    'login, email, password, status_code, error_message', [
+('1sxasdas', '11sxdqaw2@12.ru', '12345', 400, 'Validation failed'),
+        ('1sxasdas', '12%12.ru', '123456', 400, 'Validation failed'),
+        ('1', '12@12.ru', '123456', 400, 'Validation failed'),
+    ]
+)
+def test_invalid_date_of_new_user(
+        account_helper,
+        login,
+        email,
+        password,
+        status_code,
+        error_message
+):
+    with check_status_code_http(status_code, error_message):
+        account_helper.register_new_user(login=login, password=password, email=email)
