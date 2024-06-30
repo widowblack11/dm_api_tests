@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from checkers.get_v1_account import GetV1Account
 from checkers.http_checkers import check_status_code_http
 from dm_api_account.models.user_envelope import UserRoles
 
@@ -19,26 +21,7 @@ def test_get_v1_account_with_auth(
 ):
     with check_status_code_http():
         response = auth_account_helper.dm_account_api.account_api.get_v1_account()
-        assert_that(
-            response, all_of(
-                has_property('resource', has_property('login', starts_with("prokopenko"))),
-                has_property(
-                    'resource', has_property('settings', has_property('colorSchema', equal_to('Modern')))
-                ),
-                has_property('resource', has_property('registration', instance_of(datetime))),
-                has_property('resource', has_property('online', instance_of(datetime))),
-                has_property(
-                    'resource', has_properties(
-                        {
-                            'roles': contains_inanyorder(
-                                UserRoles.PLAYER,
-                                UserRoles.GUEST
-                            )
-                        }
-                    )
-                )
-            )
-        )
+        GetV1Account.check_get_v1_account(response)
 
 
 def test_get_v1_account_no_auth(
@@ -47,5 +30,3 @@ def test_get_v1_account_no_auth(
 ):
     with check_status_code_http(401, 'User must be authenticated'):
         account_helper.dm_account_api.account_api.get_v1_account(validation_response=validation_response)
-
-
