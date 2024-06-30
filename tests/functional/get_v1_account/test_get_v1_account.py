@@ -21,7 +21,7 @@ def test_get_v1_account_with_auth(
 ):
     with check_status_code_http():
         response = auth_account_helper.dm_account_api.account_api.get_v1_account()
-        GetV1Account.check_get_v1_account(response)
+        GetV1Account.check_get_v1_account(response, start_part_of_login='prokopenko')
 
 
 def test_get_v1_account_no_auth(

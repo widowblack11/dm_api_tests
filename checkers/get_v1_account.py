@@ -18,11 +18,12 @@ class GetV1Account:
     @classmethod
     def check_get_v1_account(
             cls,
-            response
+            response,
+            start_part_of_login: str
     ):
         assert_that(
             response, all_of(
-                has_property('resource', has_property('login', starts_with("prokopenko"))),
+                has_property('resource', has_property('login', starts_with(start_part_of_login))),
                 has_property(
                     'resource', has_property('settings', has_property('colorSchema', equal_to('Modern')))
                 ),
