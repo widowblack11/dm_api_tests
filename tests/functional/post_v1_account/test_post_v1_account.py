@@ -1,17 +1,6 @@
 from datetime import datetime
 
 import pytest
-from hamcrest import (
-    assert_that,
-    has_property,
-    starts_with,
-    all_of,
-    instance_of,
-    has_properties,
-    equal_to,
-
-)
-
 from checkers.http_checkers import check_status_code_http
 from checkers.post_v1_account import PostV1Account
 

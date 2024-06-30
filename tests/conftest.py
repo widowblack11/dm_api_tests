@@ -78,7 +78,7 @@ def account_helper(
 @pytest.fixture
 def prepare_user():
     now = datetime.now()
-    data = now.strftime("%d_%m_%Y_%H_%M_%S")
+    data = now.strftime("%d_%m_%Y_%H_%M_%S.%f")
     login = f'prokopenko_{data}'
     password = '118288388111'
     email = f'{login}@gmail.com'
@@ -119,3 +119,4 @@ def auth_account_helper(
         password=password
     )
     return account_helper
+
