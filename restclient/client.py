@@ -7,6 +7,7 @@ from requests import (
 )
 
 from restclient.configuration import Configuration
+from restclient.utilities import allure_attach
 
 
 class RestClient:
@@ -23,7 +24,7 @@ class RestClient:
     def set_headers(
             self,
             headers
-            ):
+    ):
         if headers:
             self.session.headers.update(headers)
 
@@ -55,6 +56,7 @@ class RestClient:
     ):
         return self._send_request(method='DELETE', path=path, **kwargs)
 
+    @allure_attach
     def _send_request(
             self,
             method,
@@ -94,7 +96,7 @@ class RestClient:
     @staticmethod
     def _get_json(
             rest_response
-            ):
+    ):
         try:
             return rest_response.json()
         except JSONDecodeError:

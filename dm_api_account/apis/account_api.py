@@ -1,3 +1,4 @@
+import allure
 import requests
 
 from dm_api_account.models.change_email import ChangeEmail
@@ -10,7 +11,7 @@ from restclient.client import RestClient
 
 
 class AccountApi(RestClient):
-
+    @allure.step('Зарегестрировать нового пользователя')
     def post_v1_account(
             self,
             registration: Registration
@@ -25,6 +26,7 @@ class AccountApi(RestClient):
         )
         return response
 
+    @allure.step('Получить данные пользователя')
     def get_v1_account(
             self,
             validation_response=True,
@@ -43,6 +45,7 @@ class AccountApi(RestClient):
             return UserDetailsEnvelope(**response.json())
         return response
 
+    @allure.step('Активировать нового пользователя')
     def put_v1_account_to_token(
             self,
             token,
@@ -64,6 +67,7 @@ class AccountApi(RestClient):
             return UserEnvelope(**response.json())
         return response
 
+    @allure.step('Изменить email')
     def put_v1_account_email(
             self,
             change_email: ChangeEmail,
@@ -86,6 +90,7 @@ class AccountApi(RestClient):
 
         return response
 
+    @allure.step('Сменить пароль')
     def put_v1_account_password(
             self,
             change_password: ChangePassword,
@@ -105,6 +110,7 @@ class AccountApi(RestClient):
             return UserEnvelope(**response.json())
         return response
 
+    @allure.step('Отправить запрос на смену пароля')
     def post_v1_account_password(
             self,
             reset_password: ResetPassword,
