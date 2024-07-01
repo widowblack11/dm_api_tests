@@ -1,6 +1,8 @@
 import time
 from json import loads
 
+import allure
+
 from dm_api_account.models.change_email import ChangeEmail
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
@@ -49,6 +51,7 @@ class AccountHelper:
         self.dm_account_api = dm_account_api
         self.mailhog = mailhog
 
+    @allure.step('Получить авторизационный токен')
     def auth_client(
             self,
             login: str,
@@ -71,6 +74,7 @@ class AccountHelper:
         self.dm_account_api.account_api.set_headers(token)
         self.dm_account_api.login_api.set_headers(token)
 
+    @allure.step('Регистрация нового пользователя')
     def register_new_user(
             self,
             login: str,
@@ -96,6 +100,7 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_to_token(token=token)
         return response
 
+    @allure.step('Авторизация пользователя')
     def user_login(
             self,
             login: str,
@@ -116,6 +121,7 @@ class AccountHelper:
             assert response.headers['x-dm-auth-token'], 'Токен пользователя не был получен'
         return response
 
+    @allure.step('Смена email')
     def change_email(
             self,
             login: str,
@@ -166,6 +172,7 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_password(change_password=change_password)
         return response
 
+    @allure.step('Получить активационный токен из письма')
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activate_token_by_login(
             self,
@@ -183,6 +190,7 @@ class AccountHelper:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
         return token
 
+    @allure.step('Получить токен для смены пароля')
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_token_for_change_password(
             self,
