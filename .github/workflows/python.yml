@@ -24,7 +24,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest ./tests --alluredir=allure-results --disable-warning
+          pytest ./tests --alluredir=allure-results 
 
       - name: Archive allure result
         uses: actions/upload-artifact@v3
