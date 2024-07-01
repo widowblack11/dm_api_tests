@@ -66,4 +66,5 @@ jobs:
       - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
+      - run: echo 'https://widowblack11.github.io/dm_api_tests/'
 
